@@ -9,6 +9,24 @@ readme = "README.md"
 python = "^3.12"
 
 
+[tool.poetry.group.prod.dependencies]
+pydantic-settings = "^2.8.1"
+kagglehub = {extras = ["pandas-datasets"], version = "^0.3.11"}
+
+
+[tool.poetry.group.dev.dependencies]
+taskipy = "^1.14.1"
+pytest = "^8.3.5"
+ruff = "^0.11.4"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.taskipy.tasks]
+lint = 'ruff check .&& ruff check . --diff'
+format = 'ruff check . --fix && ruff format .'
+run = 'fastapi dev fast_api_from_zero/app.py'
+pre_test = 'task lint'
+test = 'pytest -s --cov=fast_api_from_zero -vv'
+post_test = 'coverage html'

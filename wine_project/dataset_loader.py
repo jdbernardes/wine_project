@@ -1,21 +1,22 @@
-# Example
-# Install dependencies as needed:
-# pip install kagglehub[pandas-datasets]
-import kagglehub
+import pandas as pd
+
+from kagglehub import load_dataset
 from kagglehub import KaggleDatasetAdapter
+from wine_project.settings import Settings
 
-# Set the path to the file you'd like to load
-file_path = ""
 
-# Load the latest version
-df = kagglehub.load_dataset(
-  KaggleDatasetAdapter.PANDAS,
-  "sumit17125/red-wine-quality-dataset",
-  file_path,
-  # Provide any additional arguments like 
-  # sql_query or pandas_kwargs. See the 
-  # documenation for more information:
-  # https://github.com/Kaggle/kagglehub/blob/main/README.md#kaggledatasetadapterpandas
-)
+class DatasetLoader:
+    
+    _filepath:str = Settings().FILE
+    
+    def load_data(self) -> pd.DataFrame:
+        return load_dataset(
+            KaggleDatasetAdapter.PANDAS,
+            Settings().DATASET,
+            self._filepath
+        )
 
-print("First 5 records:", df.head())
+if __name__ == '__main__':
+    df = DatasetLoader()
+    data: pd.DataFrame = df.load_data()
+    print(data.head())
