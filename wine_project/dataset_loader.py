@@ -9,14 +9,18 @@ class DatasetLoader:
     
     _filepath:str = Settings().FILE
     
-    def load_data(self) -> pd.DataFrame:
+    def load_data(self, **kwargs) -> pd.DataFrame:
         return load_dataset(
             KaggleDatasetAdapter.PANDAS,
             Settings().DATASET,
-            self._filepath
+            self._filepath,
+            pandas_kwargs= {**kwargs}
         )
 
 if __name__ == '__main__':
     df = DatasetLoader()
-    data: pd.DataFrame = df.load_data()
+    kwargs = {
+        "sep": ";"
+    }
+    data: pd.DataFrame = df.load_data(**kwargs)
     print(data.head())
