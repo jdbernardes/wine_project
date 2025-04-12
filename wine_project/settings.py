@@ -7,3 +7,4 @@ class Settings(BaseSettings):
     )
     DATASET: str
     FILE: str
+    DATABASE_URL: str
