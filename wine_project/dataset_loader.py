@@ -17,7 +17,7 @@ class DatasetLoader:
             pandas_kwargs= {**kwargs}
         )
 
-if __name__ == '__main__':
+if __name__ == '__main__': #pragma: no cover
     df = DatasetLoader()
     kwargs = {
         "sep": ";"
