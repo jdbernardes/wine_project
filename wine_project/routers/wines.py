@@ -18,6 +18,8 @@ def load_data():
     }
     data: pd.DataFrame = df.load_data(**kwargs)
     wines = data.drop(columns='quality')
+    wines = wines.head(5)
     #quality = data['quality']
-    print(wines)
+    dicts = [row.to_dict() for _, row in wines.iterrows()]
+    print(dicts)
     return {'message': 'OK'}

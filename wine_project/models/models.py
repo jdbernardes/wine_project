@@ -23,7 +23,9 @@ class Wine:
 
     evaluated_wines: Mapped["EvaluatedWines"] = relationship(
         back_populates="wine",
-        uselist=False)
+        uselist=False,
+        init=False,
+        default=None)
     
 
 @table_registry.mapped_as_dataclass
@@ -32,5 +34,5 @@ class EvaluatedWines:
 
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     wine_id: Mapped[int] = mapped_column(ForeignKey('wines.id'), init=False)
-    wine: Mapped[Wine] = relationship(init=False, back_populates="evaluated_wines")
+    wine: Mapped[Wine] = relationship(back_populates="evaluated_wines")
     quality:Mapped[int]
