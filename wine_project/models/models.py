@@ -8,7 +8,7 @@ table_registry = registry()
 class Wine:
     __tablename__ = 'wines'
 
-    id: Mapped[int]
+    id: Mapped[int] = mapped_column(init=False, primary_key=True)
     fixed_accidity: Mapped[float]
     volatile_acidity: Mapped[float]
     citric_acid: Mapped[float]
@@ -21,14 +21,16 @@ class Wine:
     sulphates: Mapped[float]
     alcohol: Mapped[float]
 
-    evaluated_wines: Mapped[list["EvaluatedWines"]] = relationship(back_populates="wine")
+    evaluated_wines: Mapped["EvaluatedWines"] = relationship(
+        back_populates="wine",
+        uselist=False)
     
 
 @table_registry.mapped_as_dataclass
 class EvaluatedWines:
     __tablename__ = 'evaluated_wines'
 
-    id: Mapped[int]
-    wine_id: Mapped[int] = mapped_column(ForeignKey('wines.id'))
+    id: Mapped[int] = mapped_column(init=False, primary_key=True)
+    wine_id: Mapped[int] = mapped_column(ForeignKey('wines.id'), init=False)
     wine: Mapped[Wine] = relationship(init=False, back_populates="evaluated_wines")
     quality:Mapped[int]

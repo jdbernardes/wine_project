@@ -4,7 +4,7 @@ from wine_project.models.models import Wine, EvaluatedWines
 
 
 def test_create_user(session):
-    evaluated_wine = EvaluatedWines(quality=5, wine_id=1)
+    evaluated_wine = EvaluatedWines(quality=5)
     new_wine = Wine(
         fixed_accidity = 1,
         volatile_acidity = 1,
