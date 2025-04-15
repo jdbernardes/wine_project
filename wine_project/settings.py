@@ -8,3 +8,5 @@ class Settings(BaseSettings):
     DATASET: str
     FILE: str
     DATABASE_URL: str
+    SEED: int
+    VALID_SIZE:float
