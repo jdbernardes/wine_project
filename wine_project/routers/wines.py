@@ -6,7 +6,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from wine_project.database import get_session
-from wine_project.dataset_loader import DatasetLoader
+from wine_project.data_loaders.dataset_loader import DatasetLoader
+from wine_project.data_loaders.generate_validation_data import ValidationData
 from wine_project.models.models import Wine, EvaluatedWines
 from wine_project.schemas.schemas import Message
 
@@ -16,10 +17,14 @@ router = APIRouter(prefix='/wines', tags=['Wines'])
 @router.post('/load_data', status_code=HTTPStatus.CREATED, response_model=Message)
 def load_data(session: Session = Depends(get_session)):
     df = DatasetLoader()
+    val_data = ValidationData()
     kwargs = {
         "sep": ";"
     }
-    data: pd.DataFrame = df.load_data(**kwargs)
+    raw_data: pd.DataFrame = df.load_data(**kwargs)
+    data: pd.DataFrame = val_data.generate_csv(raw_data)
+    print(len(raw_data))
+    print(len(data))
     try:
         for _, row in data.iterrows():
             wine = Wine(
@@ -46,4 +51,4 @@ def load_data(session: Session = Depends(get_session)):
         session.rollback()
         print(f"Failed to insert wines: {e}")
         raise
-    return {'message': 'OK'}
+    return {'message': 'Data Load Successful'}
