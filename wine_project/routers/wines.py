@@ -1,7 +1,8 @@
 import pandas as pd
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from kagglehub.exceptions import KaggleApiHTTPError
 
 from sqlalchemy.orm import Session
 
@@ -12,43 +13,46 @@ from wine_project.models.models import Wine, EvaluatedWines
 from wine_project.schemas.schemas import Message
 
 
-router = APIRouter(prefix='/wines', tags=['Wines'])
+router = APIRouter(prefix="/wines", tags=["Wines"])
 
-@router.post('/load_data', status_code=HTTPStatus.CREATED, response_model=Message)
+
+@router.post("/load_data", status_code=HTTPStatus.CREATED, response_model=Message)
 def load_data(session: Session = Depends(get_session)):
-    df = DatasetLoader()
-    val_data = ValidationData()
-    kwargs = {
-        "sep": ";"
-    }
-    raw_data: pd.DataFrame = df.load_data(**kwargs)
-    data: pd.DataFrame = val_data.generate_csv(raw_data)
-    print(len(raw_data))
-    print(len(data))
     try:
+        df = DatasetLoader()
+        val_data = ValidationData()
+        kwargs = {"sep": ";"}
+        raw_data: pd.DataFrame = df.load_data(**kwargs)
+        data: pd.DataFrame = val_data.generate_csv(raw_data)
+
         for _, row in data.iterrows():
             wine = Wine(
-                fixed_accidity= row['fixed acidity'],
-                volatile_acidity= row['volatile acidity'],
-                citric_acid= row['citric acid'],
-                residual_sugar= row['residual sugar'],
-                chlorides= row['chlorides'],
-                free_sulfur_dioxide= row['free sulfur dioxide'],
-                total_sulfur_dioxide= row['total sulfur dioxide'],
-                density= row['density'],
-                pH= row['pH'],
-                sulphates= row['sulphates'],
-                alcohol= row['alcohol']
+                fixed_accidity=row["fixed acidity"],
+                volatile_acidity=row["volatile acidity"],
+                citric_acid=row["citric acid"],
+                residual_sugar=row["residual sugar"],
+                chlorides=row["chlorides"],
+                free_sulfur_dioxide=row["free sulfur dioxide"],
+                total_sulfur_dioxide=row["total sulfur dioxide"],
+                density=row["density"],
+                pH=row["pH"],
+                sulphates=row["sulphates"],
+                alcohol=row["alcohol"],
             )
-            eval = EvaluatedWines(
-                wine = wine,
-                quality = row['quality']
-            )
+            eval = EvaluatedWines(wine=wine, quality=row["quality"])
             session.add(wine)
             session.add(eval)
             session.commit()
-    except Exception as e:
-        session.rollback()
-        print(f"Failed to insert wines: {e}")
-        raise
-    return {'message': 'Data Load Successful'}
+        return {"message": "Data Load Successful"}
+    # except OperationalError as oe:
+    #     session.rollback()
+    #     print(f"Failed to insert wines: {oe}")
+    #     raise HTTPException(
+    #         status_code='503',
+    #         detail='Service Unavailable'
+    #     )
+    except KaggleApiHTTPError:
+        raise HTTPException(
+            status_code=403,
+            detail="Dataset not available on kaggle to create the DB or you do not have permission",
+        )

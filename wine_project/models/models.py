@@ -4,9 +4,10 @@ from sqlalchemy.orm import Mapped, mapped_column, registry, relationship
 
 table_registry = registry()
 
+
 @table_registry.mapped_as_dataclass
 class Wine:
-    __tablename__ = 'wines'
+    __tablename__ = "wines"
 
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     fixed_accidity: Mapped[float]
@@ -22,17 +23,15 @@ class Wine:
     alcohol: Mapped[float]
 
     evaluated_wines: Mapped["EvaluatedWines"] = relationship(
-        back_populates="wine",
-        uselist=False,
-        init=False,
-        default=None)
-    
+        back_populates="wine", uselist=False, init=False, default=None
+    )
+
 
 @table_registry.mapped_as_dataclass
 class EvaluatedWines:
-    __tablename__ = 'evaluated_wines'
+    __tablename__ = "evaluated_wines"
 
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
-    wine_id: Mapped[int] = mapped_column(ForeignKey('wines.id'), init=False)
+    wine_id: Mapped[int] = mapped_column(ForeignKey("wines.id"), init=False)
     wine: Mapped[Wine] = relationship(back_populates="evaluated_wines")
-    quality:Mapped[int]
+    quality: Mapped[int]
