@@ -20,5 +20,14 @@ class WineSchema(BaseModel):
     sulphates: float
     alcohol: float
 
+class EvaluatedWines(BaseModel):
+    id: int
+    wine_id: int
+    quality: int
+
+
 class WinesDashboard(BaseModel):
     wines: List[WineSchema]
+
+class Evaluations(BaseModel):
+    evals: List[EvaluatedWines]
