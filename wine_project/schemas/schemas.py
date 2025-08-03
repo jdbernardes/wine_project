@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 
 class Message(BaseModel):
@@ -18,3 +19,6 @@ class WineSchema(BaseModel):
     pH: float
     sulphates: float
     alcohol: float
+
+class WinesDashboard(BaseModel):
+    wines: List[WineSchema]
