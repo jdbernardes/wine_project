@@ -44,13 +44,6 @@ def load_data(session: Session = Depends(get_session)):
             session.add(eval)
             session.commit()
         return {"message": "Data Load Successful"}
-    # except OperationalError as oe:
-    #     session.rollback()
-    #     print(f"Failed to insert wines: {oe}")
-    #     raise HTTPException(
-    #         status_code='503',
-    #         detail='Service Unavailable'
-    #     )
     except KaggleApiHTTPError:
         raise HTTPException(
             status_code=403,
